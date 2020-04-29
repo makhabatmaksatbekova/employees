@@ -25,24 +25,31 @@ class App extends Component {
         this.getApiData();
     }
 
-    getSearch = (search) => {
-        this.setState({search})
-        console.log(search)
+    getSearch = (e) => {
+        this.setState({search:e.target.value});
     }
 
     render(){
-        const { employees, isLoading } = this.state;
+        const { employees, isLoading, search } = this.state;
+        
+        const filteredEmployees = employees.filter(employee => {
+            const fFirst = employee.first_name.toLowerCase().includes(search.toLowerCase());
+            const fLast = employee.last_name.toLowerCase().includes(search.toLowerCase());
+            return fFirst || fLast
+        })
+
         const loader = <div className="lds-dual-ring"></div>;
-        let content = isLoading ? loader : <List employees={employees} />
-        if(!isLoading && !employees.length){
+        let content = isLoading ? loader : <List employees={filteredEmployees} />
+        if(!isLoading && !filteredEmployees.length){
             content = <div className="not-found">Data Not Found</div>
         }
         return (
             <div className="container">
-                <Search getSearch={this.getSearch} />
+                <Search value={search} getSearch={this.getSearch} />
                 {content}
             </div>
         )
+
     }
     
 }
